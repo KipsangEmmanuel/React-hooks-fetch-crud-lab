@@ -19,7 +19,36 @@ function QuestionForm(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    console.log(formData);
+    // console.log(formData);
+    // create an object with the question data
+    const  questionData = {
+      prompt: formData.prompt,
+      answers: [formData.answer1, formData.answer2, formData.answer3, formData.answer4],
+      correctIndex: parseInt(formData.correctIndex)
+    };
+
+    //send a POST request to the API
+    fetch('http://localhost:3002/questions', {
+      method: "POST",
+      headers: {
+        "Content-Type": 'application/json'
+      },
+      body: JSON.stringify(questionData)
+    })
+    .then((res) => res.json())
+    .then(data => {
+      //add the new question to the list of questions
+      props.onAddQuestion(data);
+      // Clear the form data
+      setFormData({
+        prompt: '',
+        answer1: '',
+        answer2: '',
+        answer3: '',
+        answer4: '',
+        correctIndex: 0
+      });
+    })
   }
 
   return (
@@ -84,7 +113,7 @@ function QuestionForm(props) {
             <option value="3">{formData.answer4}</option>
           </select>
         </label>
-        <button type="submit">Add Question</button>
+        <button type="submit" onClick={handleSubmit}>Add Question</button>
       </form>
     </section>
   );
